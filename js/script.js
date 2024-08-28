@@ -16,25 +16,26 @@ const createCell = (cellNumber) => {
   return cell;
 };
 
-// Funzione per reagire al click di una cella
-const onCellClick = (event) => {
-  console.log(event.target.innerText);
-  // Se contiene già clicked esci
-  if (event.target.classList.contains("clicked")) return;
-  //   Aggiungo classe per colorare la cella
-  event.target.classList.add("clicked");
-  score++;
-  scoreElement.innerText = score;
-};
-
 // Funzione per generare tot numeri random
 const getRandomNumbers = (max, totalNumbers) => {
   const numbers = [];
   while (numbers.length < totalNumbers) {
     const randomNumber = Math.floor(Math.random() * max) + 1;
-    numbers.push(randomNumber);
+    if (!numbers.includes(randomNumber)) numbers.push(randomNumber);
   }
   return numbers;
+};
+
+// Funzione per reagire al click di una cella
+const onCellClick = (event) => {
+  console.log(event.target.innerText);
+  // Se contiene già clicked esci
+  if (event.target.classList.contains("clicked")) return;
+
+  //   Aggiungo classe per colorare la cella
+  event.target.classList.add("clicked");
+  score++;
+  scoreElement.innerText = score;
 };
 
 // Funzione CORE per lo svoglimento del gioco
@@ -78,8 +79,11 @@ const startGame = (event) => {
   for (let i = 1; i <= totalCells; i++) {
     // Creo una cella
     const cell = createCell(i);
+    // Verifico se ho cliccato una bomba
+
     // Al click >
     cell.addEventListener("click", onCellClick);
+
     // La inserisco nella griglia
     grid.appendChild(cell);
   }

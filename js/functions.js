@@ -63,3 +63,25 @@ function isPari(number) {
 function isNumber(value) {
   return !isNaN(value);
 }
+
+/**
+ * Genera un array di numeri casuali unici all'interno di un intervallo specificato.
+ *
+ * @param {number} max - Il valore massimo (incluso) che un numero generato può avere.
+ * @param {number} totalNumbers - Il numero totale di numeri casuali unici da generare.
+ * @returns {number[]} Un array contenente i numeri casuali generati.
+ *
+ * @example
+ * // Genera 5 numeri casuali tra 1 e 10
+ * const numeriCasuali = getRandomNumbers(10, 5);
+ * console.log(numeriCasuali); // Può restituire: [3, 7, 1, 9, 5]
+ */
+const getRandomNumbers = (max, totalNumbers) => {
+  const numbers = [];
+  while (numbers.length < totalNumbers) {
+    const randomNumber = Math.floor(Math.random() * max) + 1;
+    numbers.push(randomNumber);
+    if (!numbers.includes(randomNumber)) numbers.push(randomNumber);
+  }
+  return numbers;
+};
