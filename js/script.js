@@ -6,6 +6,9 @@ const form = document.querySelector("form");
 const levelSelect = document.getElementById("select-level");
 const scoreElement = document.getElementById("score");
 let score = 0;
+let bombs = [];
+const totalBombs = 16;
+let totalCells;
 
 // Funzioni
 // Funzione per la creazione di una cella
@@ -26,23 +29,13 @@ const getRandomNumbers = (max, totalNumbers) => {
   return numbers;
 };
 
-// Funzione per reagire al click di una cella
-const onCellClick = (event) => {
-  console.log(event.target.innerText);
-  // Se contiene già clicked esci
-  if (event.target.classList.contains("clicked")) return;
-
-  //   Aggiungo classe per colorare la cella
-  event.target.classList.add("clicked");
-  score++;
-  scoreElement.innerText = score;
-};
-
 // Funzione CORE per lo svoglimento del gioco
 const startGame = (event) => {
   // Preparazione
   // Blocco l'invio del form
   event.preventDefault();
+  score = 0;
+  scoreElement.innerText = score;
   // Svuoto la griglia
   grid.innerHTML = "";
   // Cambio il testo del bottone gioca
@@ -55,7 +48,6 @@ const startGame = (event) => {
 
   let rows;
   let cols;
-  const totalBombs = 16;
   // Decido quante colonne e righe generare
   switch (level) {
     case "hard":
@@ -71,9 +63,10 @@ const startGame = (event) => {
       cols = 10;
   }
   // Calcolo totale delle celle
-  const totalCells = rows * cols;
+  totalCells = rows * cols;
+
   // Genero le bombe
-  const bombs = getRandomNumbers(totalCells, totalBombs);
+  bombs = getRandomNumbers(totalCells, totalBombs);
   console.log(bombs);
   //   Genero le celle in base al livello scelto
   for (let i = 1; i <= totalCells; i++) {
@@ -89,5 +82,50 @@ const startGame = (event) => {
   }
 };
 
+// Funzione per reagire al click di una cella
+const onCellClick = (event) => {
+  const cellNumber = parseInt(event.target.innerText);
+
+  if (event.target.classList.contains("clicked")) return;
+
+  if (bombs.includes(cellNumber)) {
+    bombs.forEach((bombNumber) => {
+      const bombCell = grid.querySelector(`.cell:nth-child(${bombNumber})`);
+
+      if (bombCell) {
+        bombCell.classList.add("bomb");
+      }
+    });
+
+    event.target.innerText = "";
+    setTimeout(() => {
+      alert(
+        `Hai cliccato su una bomba! Fine del gioco. 
+        Hai totalizzato ${score} punti. 
+        Clicca su 'Ricomincia' per una nuova partita!`
+      );
+    }, 500);
+
+    grid.querySelectorAll(".cell").forEach((cell) => {
+      cell.removeEventListener("click", onCellClick);
+    });
+  } else {
+    event.target.classList.add("clicked");
+    score++;
+    scoreElement.innerText = score;
+
+    const cellsToWin = totalCells - totalBombs;
+    setTimeout(() => {
+      if (score === cellsToWin) {
+        alert(`Complimenti, hai vinto! 
+            Hai totalizzato ${score} punti. 
+            Clicca su 'Ricomincia' per una nuova partita!`);
+        grid.querySelectorAll(".cell").forEach((cell) => {
+          cell.removeEventListener("click", onCellClick);
+        });
+      }
+    }, 500);
+  }
+};
 // Elaborazione
 form.addEventListener("submit", startGame);
